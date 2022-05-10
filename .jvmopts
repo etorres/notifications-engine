@@ -1,0 +1,3 @@
+-Xms512M
+-Xmx4096M
+-Xss2M
