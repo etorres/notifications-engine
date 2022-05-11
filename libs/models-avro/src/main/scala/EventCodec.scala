@@ -3,13 +3,8 @@ package es.eriktorr.notification_engine
 import cats.syntax.all.*
 import vulcan.Codec
 
-object EventCodec:
-
+trait EventCodec extends EventIdCodec with ChannelCodec with PayloadCodec:
   implicit val eventCodec: Codec[Event] =
-    implicit val eventIdCodec: Codec[EventId] = EventIdCodec.eventIdCodec
-    implicit val channelCodec: Codec[Channel] = ChannelCodec.channelCodec
-    implicit val payloadCodec: Codec[Payload] = PayloadCodec.payloadCodec
-
     Codec.record(
       name = "Event",
       namespace = Namespaces.default,

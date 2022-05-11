@@ -2,7 +2,7 @@ package es.eriktorr.notification_engine
 
 import vulcan.{AvroError, Codec}
 
-object ChannelCodec:
+trait ChannelCodec:
   implicit val channelCodec: Codec[Channel] = Codec.enumeration[Channel](
     name = "Channel",
     namespace = Namespaces.default,

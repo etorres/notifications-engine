@@ -26,19 +26,23 @@ lazy val `notifications-dispatcher` =
 lazy val `notifications-gateway` =
   project
     .application("notifications-gateway")
-    .dependsOn(models % "test->test;compile->compile")
+    .dependsOn(models % "test->test;compile->compile", `models-json`)
     .mainDependencies(
       catsCore,
+      circeCore,
       fs2Core,
       fs2Io,
       fs2kafka,
       fs2kafkaVulcan,
+      http4sCirce,
+      http4sCore,
+      http4sDsl,
+      http4sEmberServer,
       log4catsCore,
       log4catsSlf4j,
     )
     .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
     .testDependencies(
-      fs2kafkaVulcanTestkitMunit,
       munit,
       munitCatsEffect,
       munitScalacheck,
@@ -47,7 +51,7 @@ lazy val `notifications-gateway` =
     )
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
 
-lazy val models = project.library("models").mainDependencies(catsCore)
+lazy val models = project.library("models").mainDependencies(catsCore, typename)
 
 lazy val `models-avro` = project
   .library("models-avro")
@@ -57,4 +61,5 @@ lazy val `models-avro` = project
 lazy val `models-json` = project
   .library("models-json")
   .dependsOn(models % "test->test;compile->compile")
-  .mainDependencies(catsCore)
+  .mainDependencies(catsCore, circeCore)
+  .testDependencies(circeParser, munit)

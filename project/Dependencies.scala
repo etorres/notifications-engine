@@ -16,6 +16,14 @@ trait Cats {
   val kittens = organization %% "kittens" % kittensVersion
 }
 
+trait Circe {
+  private[this] val organization = "io.circe"
+  private[this] val version = "0.14.1"
+
+  val circeCore = organization %% "circe-core" % version
+  val circeParser = organization %% "circe-parser" % version
+}
+
 trait Fs2 {
   private[this] val organization = "co.fs2"
   private[this] val version = "3.2.7"
@@ -30,7 +38,16 @@ trait Fs2kafka {
 
   val fs2kafka = organization %% "fs2-kafka" % version
   val fs2kafkaVulcan = organization %% "fs2-kafka-vulcan" % version
-  val fs2kafkaVulcanTestkitMunit = organization %% "fs2-kafka-vulcan-testkit-munit" % version
+}
+
+trait Http4s {
+  private[this] val organization = "org.http4s"
+  private[this] val version = "0.23.11"
+
+  val http4sCirce = organization %% "http4s-circe" % version
+  val http4sCore = organization %% "http4s-core" % version
+  val http4sDsl = organization %% "http4s-dsl" % version
+  val http4sEmberServer = organization %% "http4s-ember-server" % version
 }
 
 trait Log4cats {
@@ -64,6 +81,13 @@ trait Munit {
   val scalacheckEffectMunit = typelevelOrg %% "scalacheck-effect-munit" % scalacheckEffectVersion
 }
 
+trait Typename {
+  private[this] val organization = "org.tpolecat"
+  private[this] val version = "1.0.0"
+
+  val typename = organization %% "typename" % version
+}
+
 trait Vulcan {
   private[this] val organization = "com.github.fd4s"
   private[this] val version = "1.8.3"
@@ -73,9 +97,12 @@ trait Vulcan {
 
 object Dependencies
     extends Cats
+    with Circe
     with Fs2
     with Fs2kafka
+    with Http4s
     with Log4cats
     with Log4j
     with Munit
+    with Typename
     with Vulcan
