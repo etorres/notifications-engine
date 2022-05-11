@@ -5,8 +5,7 @@ import NotificationError.InvalidEventId
 opaque type EventId = String
 
 object EventId:
-
-  def unsafeFrom(value: String): EventId = value
+  private[this] def unsafeFrom(value: String): EventId = value
 
   def from(value: String): Either[InvalidEventId, EventId] = if value.nonEmpty then
     Right(unsafeFrom(value))

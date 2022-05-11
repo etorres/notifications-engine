@@ -7,7 +7,6 @@ sealed abstract class NotificationError(
     message: String,
     cause: Option[Throwable] = Option.empty[Throwable],
 ) extends NoStackTrace:
-
   import scala.language.unsafeNulls
 
   override def getCause: Throwable = cause.orNull

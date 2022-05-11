@@ -4,8 +4,5 @@ import cats.syntax.either.*
 import vulcan.{AvroError, Codec}
 
 object EventIdCodec:
-
   implicit val eventIdCodec: Codec[EventId] =
-    Codec[String].imapError(str => EventId.from(str).leftMap(error => AvroError(error.message)))(
-      eventId => eventId.value,
-    )
+    Codec.string.imapError(EventId.from(_).leftMap(error => AvroError(error.message)))(_.value)
