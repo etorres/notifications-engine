@@ -3,19 +3,7 @@ import com.typesafe.sbt.packager.Keys.maintainer
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import sbt.Keys._
 import sbt.nio.Keys.{onChangedBuildSource, ReloadOnSourceChanges}
-import sbt.{
-  addCommandAlias,
-  file,
-  Compile,
-  Def,
-  Global,
-  ModuleID,
-  Project,
-  Provided,
-  Runtime,
-  Test,
-  ThisBuild,
-}
+import sbt._
 import sbtide.Keys.idePackagePrefix
 import scalafix.sbt.ScalafixPlugin.autoImport.scalafixSemanticdb
 import wartremover.WartRemover.autoImport.{wartremoverErrors, Wart, Warts}
@@ -34,16 +22,21 @@ object Settings {
 
   private[this] val warts: Seq[wartremover.Wart] = Warts.unsafe.filter(_ != Wart.DefaultArguments)
 
+  private[this] val basePackage = "es.eriktorr.notification_engine"
+
+  def fqClassNameFrom(className: String): Option[String] = Some(s"$basePackage.$className")
+
   private[this] def commonSettings(projectName: String): Def.SettingsDefinition = Seq(
     name := projectName,
     ThisBuild / organization := "es.eriktorr",
     ThisBuild / version := "1.0.0",
-    ThisBuild / idePackagePrefix := Some("es.eriktorr.notification_engine"),
+    ThisBuild / idePackagePrefix := Some(basePackage),
     Global / excludeLintKeys += idePackagePrefix,
     ThisBuild / scalaVersion := "3.1.2",
     Global / cancelable := true,
     Global / fork := true,
     Global / onChangedBuildSource := ReloadOnSourceChanges,
+    resolvers += "confluent" at "https://packages.confluent.io/maven/",
     Compile / compile / wartremoverErrors ++= warts,
     Test / compile / wartremoverErrors ++= warts,
     ThisBuild / semanticdbEnabled := true,

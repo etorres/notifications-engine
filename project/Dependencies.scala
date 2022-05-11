@@ -24,6 +24,15 @@ trait Fs2 {
   val fs2Io = organization %% "fs2-io" % version
 }
 
+trait Fs2kafka {
+  private[this] val organization = "com.github.fd4s"
+  private[this] val version = "2.4.0"
+
+  val fs2kafka = organization %% "fs2-kafka" % version
+  val fs2kafkaVulcan = organization %% "fs2-kafka-vulcan" % version
+  val fs2kafkaVulcanTestkitMunit = organization %% "fs2-kafka-vulcan-testkit-munit" % version
+}
+
 trait Log4cats {
   private[this] val organization = "org.typelevel"
   private[this] val version = "2.3.1"
@@ -55,4 +64,18 @@ trait Munit {
   val scalacheckEffectMunit = typelevelOrg %% "scalacheck-effect-munit" % scalacheckEffectVersion
 }
 
-object Dependencies extends Cats with Fs2 with Log4cats with Log4j with Munit
+trait Vulcan {
+  private[this] val organization = "com.github.fd4s"
+  private[this] val version = "1.8.3"
+
+  val vulcan = organization %% "vulcan" % version
+}
+
+object Dependencies
+    extends Cats
+    with Fs2
+    with Fs2kafka
+    with Log4cats
+    with Log4j
+    with Munit
+    with Vulcan

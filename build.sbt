@@ -1,23 +1,60 @@
 import Dependencies._
-import Settings.{sbtSettings, ProjectSyntax}
+import Settings.{fqClassNameFrom, sbtSettings, ProjectSyntax}
 
 sbtSettings
 
-lazy val `notification-engine` = project.root("notification-engine")
-
-lazy val models = project.library("models").mainDependencies(catsCore)
-
-lazy val `notification-gateway` =
+lazy val `notifications-engine` =
   project
-    .application("notification-gateway")
+    .root("notifications-engine")
+    .aggregate(
+      models,
+      `models-avro`,
+      `models-json`,
+      `notifications-dispatcher`,
+      `notifications-gateway`,
+    )
+
+lazy val `notifications-dispatcher` =
+  project
+    .application("notifications-dispatcher")
     .dependsOn(models % "test->test;compile->compile")
-    .mainDependencies(catsCore, fs2Core, fs2Io, log4catsCore, log4catsSlf4j)
+    .mainDependencies()
+    .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
+    .testDependencies()
+    .settings(Compile / mainClass := fqClassNameFrom("NotificationsDispatcherApp"))
+
+lazy val `notifications-gateway` =
+  project
+    .application("notifications-gateway")
+    .dependsOn(models % "test->test;compile->compile")
+    .mainDependencies(
+      catsCore,
+      fs2Core,
+      fs2Io,
+      fs2kafka,
+      fs2kafkaVulcan,
+      log4catsCore,
+      log4catsSlf4j,
+    )
     .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
     .testDependencies(
+      fs2kafkaVulcanTestkitMunit,
       munit,
       munitCatsEffect,
       munitScalacheck,
       scalacheckEffect,
       scalacheckEffectMunit,
     )
-    .settings(Compile / mainClass := Some("es.eriktorr.notification_engine.NotificationGatewayApp"))
+    .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
+
+lazy val models = project.library("models").mainDependencies(catsCore)
+
+lazy val `models-avro` = project
+  .library("models-avro")
+  .dependsOn(models % "test->test;compile->compile")
+  .mainDependencies(catsCore, vulcan)
+
+lazy val `models-json` = project
+  .library("models-json")
+  .dependsOn(models % "test->test;compile->compile")
+  .mainDependencies(catsCore)
