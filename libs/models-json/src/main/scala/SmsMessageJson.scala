@@ -2,8 +2,8 @@ package es.eriktorr.notification_engine
 
 import User.{Addressee, Sender}
 
-import io.circe.Decoder.Result
-import io.circe.{Decoder, Encoder, HCursor, Json}
+import io.circe.*
+import io.circe.generic.semiauto.*
 
 trait SmsMessageJson extends MessageBodyJson with UserJson:
   implicit val smsMessageDecoder: Decoder[SmsMessage] = (cursor: HCursor) =>
@@ -13,9 +13,4 @@ trait SmsMessageJson extends MessageBodyJson with UserJson:
       to <- cursor.downField("from").as[User[Addressee]]
     yield SmsMessage(body, from, to)
 
-  implicit val smsMessageEncoder: Encoder[SmsMessage] = (smsMessage: SmsMessage) =>
-    Json.obj(
-      ("body", Json.fromString(smsMessage.body.value)),
-      ("from", Json.fromString(smsMessage.from.value)),
-      ("to", Json.fromString(smsMessage.to.value)),
-    )
+  implicit val smsMessageEncoder: Encoder[SmsMessage] = deriveEncoder[SmsMessage]

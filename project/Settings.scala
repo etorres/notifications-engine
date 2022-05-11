@@ -20,7 +20,8 @@ object Settings {
        |""".stripMargin
   }
 
-  private[this] val warts: Seq[wartremover.Wart] = Warts.unsafe.filter(_ != Wart.DefaultArguments)
+  private[this] val warts: Seq[wartremover.Wart] =
+    Warts.unsafe.filter(x => !List(Wart.DefaultArguments, Wart.Null).contains(x))
 
   private[this] val basePackage = "es.eriktorr.notification_engine"
 

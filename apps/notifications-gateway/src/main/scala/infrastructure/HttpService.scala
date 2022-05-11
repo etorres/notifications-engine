@@ -13,11 +13,11 @@ import org.http4s.{HttpApp, HttpRoutes}
 
 object HttpService extends EventIdJson with SmsMessageJson:
   def notificationsService(messageSender: MessageSender): HttpApp[IO] = HttpRoutes
-    .of[IO] { case request @ POST -> Root / "sms" =>
+    .of[IO] { case request @ POST -> Root / "api" / "v1" / "sms" =>
       for
         smsMessage <- request.as[SmsMessage]
         eventId <- messageSender.send(smsMessage)
-        response <- Ok(eventId.asJson)
+        response <- Created(eventId.asJson)
       yield response
     }
     .orNotFound

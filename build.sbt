@@ -29,6 +29,8 @@ lazy val `notifications-gateway` =
     .dependsOn(models % "test->test;compile->compile", `models-json`)
     .mainDependencies(
       catsCore,
+      catsEffect,
+      catsEffectKernel,
       circeCore,
       fs2Core,
       fs2Io,
@@ -51,15 +53,15 @@ lazy val `notifications-gateway` =
     )
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
 
-lazy val models = project.library("models").mainDependencies(catsCore, typename)
+lazy val models = project.library("models").mainDependencies(catsCore)
 
 lazy val `models-avro` = project
   .library("models-avro")
   .dependsOn(models % "test->test;compile->compile")
-  .mainDependencies(catsCore, vulcan)
+  .mainDependencies(avro, catsCore, catsFree, vulcan)
 
 lazy val `models-json` = project
   .library("models-json")
   .dependsOn(models % "test->test;compile->compile")
-  .mainDependencies(catsCore, circeCore)
+  .mainDependencies(catsCore, circeCore, circeGeneric)
   .testDependencies(circeParser, munit)

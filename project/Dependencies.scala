@@ -1,5 +1,12 @@
 import sbt._
 
+trait Avro {
+  private[this] val organization = "org.apache.avro"
+  private[this] val version = "1.11.0"
+
+  val avro = organization % "avro" % "1.11.0"
+}
+
 trait Cats {
   private[this] val organization = "org.typelevel"
 
@@ -21,6 +28,7 @@ trait Circe {
   private[this] val version = "0.14.1"
 
   val circeCore = organization %% "circe-core" % version
+  val circeGeneric = organization %% "circe-generic" % version
   val circeParser = organization %% "circe-parser" % version
 }
 
@@ -81,13 +89,6 @@ trait Munit {
   val scalacheckEffectMunit = typelevelOrg %% "scalacheck-effect-munit" % scalacheckEffectVersion
 }
 
-trait Typename {
-  private[this] val organization = "org.tpolecat"
-  private[this] val version = "1.0.0"
-
-  val typename = organization %% "typename" % version
-}
-
 trait Vulcan {
   private[this] val organization = "com.github.fd4s"
   private[this] val version = "1.8.3"
@@ -96,7 +97,8 @@ trait Vulcan {
 }
 
 object Dependencies
-    extends Cats
+    extends Avro
+    with Cats
     with Circe
     with Fs2
     with Fs2kafka
@@ -104,5 +106,4 @@ object Dependencies
     with Log4cats
     with Log4j
     with Munit
-    with Typename
     with Vulcan
