@@ -12,7 +12,7 @@ object NotificationsDispatcherApp extends IOApp:
       case NotificationsDispatcherResources(kafkaConsumer) =>
         logger.info(s"Started Kafka event handler") *> KafkaEventHandler(
           kafkaConsumer,
-          ???,
+          ???, /* TODO */
         ).handle.compile.drain
     }
 

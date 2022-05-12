@@ -19,9 +19,11 @@ final class KafkaEventHandler(
     .mapAsync(16) { committable =>
       val event = committable.record.value
       (event.channel match
-        case Email => messageDispatcher.dispatch[EmailMessage](???)
-        case Sms => messageDispatcher.dispatch[SmsMessage](???)
-        case Webhook => messageDispatcher.dispatch[WebhookMessage](???)
+          case Email => messageDispatcher.dispatch[EmailMessage](???) /* TODO */
+          case Sms => messageDispatcher.dispatch[SmsMessage](???) /* TODO */
+          case Webhook =>
+            messageDispatcher.dispatch[WebhookMessage](???)
+        /* TODO */
       ).as(committable.offset)
     }
     .through(commitBatchWithin(500, 15.seconds))

@@ -1,16 +1,20 @@
 package es.eriktorr.notification_engine
 package infrastructure
 
-import domain.{EventPublisher, MessageSender}
-import Message.{EmailMessage, SmsMessage, WebhookMessage}
 import Channel.{Email, Sms, Webhook}
+import Message.{EmailMessage, SmsMessage, WebhookMessage}
+import domain.{EventPublisher, MessageSender}
 
 import cats.effect.IO
+import io.circe.syntax.*
 
 import java.util.UUID
 
-final class KafkaMessageSender(eventPublisher: EventPublisher) extends MessageSender:
+final class KafkaMessageSender(eventPublisher: EventPublisher)
+    extends MessageSender
+    with MessageJson:
   override def send[A <: Message](message: A): IO[EventId] = for
+    payload <- IO.fromEither(Payload.from(message.asJson.noSpaces))
     eventId <- IO.delay(EventId.from(UUID.randomUUID().nn))
     _ <- eventPublisher.publish(
       Event(
@@ -20,7 +24,7 @@ final class KafkaMessageSender(eventPublisher: EventPublisher) extends MessageSe
           case _: SmsMessage => Sms
           case _: WebhookMessage => Webhook
         ,
-        Payload.from("123").toOption.get, // TODO
+        payload,
       ),
     )
   yield eventId
