@@ -18,7 +18,7 @@ final case class NotificationsGatewayConfig(
        |http-port=${httpServerConfig.port}, 
        |bootstrap-servers=${kafkaConfig.bootstrapServers.toList.mkString(",")}, 
        |consumer-group=${kafkaConfig.consumerGroup}, 
-       |topic=${kafkaConfig.consumerGroup}, 
+       |topic=${kafkaConfig.topic}, 
        |schema-registry=${kafkaConfig.schemaRegistry}""".stripMargin.replaceAll("\\R", "")
 
 object NotificationsGatewayConfig:
@@ -87,7 +87,7 @@ object NotificationsGatewayConfig:
           kafkaBootstrapServers.getOrElse(NonEmptyList.one("localhost:29092")),
           kafkaConsumerGroup.getOrElse("notifications-gateway"),
           kafkaTopic.getOrElse("notifications-engine-tests"),
-          kafkaSchemaRegistry.getOrElse("http://localhost:8081/api/ccompat"),
+          kafkaSchemaRegistry.getOrElse("http://localhost:8081"),
         ),
       )
   }

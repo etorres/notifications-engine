@@ -40,6 +40,13 @@ final class HttpServerIntegrationTest
         messageSenderStateRef <- Ref.of[IO, FakeMessageSenderState](
           FakeMessageSenderState.empty.setEventIds(List(testCase.eventId)),
         )
+//        _ <- {
+//          testCase.message match
+//            case smsMessage: SmsMessage =>
+//              import io.circe.syntax.*
+//              IO.blocking(println(smsMessage.asJson))
+//            case _ => IO.unit
+//        }
         _ <- check(
           HttpServer(FakeMessageSender(messageSenderStateRef)).httpApp,
           testCase.message match

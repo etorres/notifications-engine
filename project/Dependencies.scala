@@ -44,7 +44,6 @@ trait Fs2 {
   private[this] val version = "3.2.7"
 
   val fs2Core = organization %% "fs2-core" % version
-  val fs2Io = organization %% "fs2-io" % version
 }
 
 trait Fs2kafka {
@@ -53,6 +52,7 @@ trait Fs2kafka {
 
   val fs2kafka = organization %% "fs2-kafka" % version
   val fs2kafkaVulcan = organization %% "fs2-kafka-vulcan" % version
+  val fs2kafkaVulcanTestkitMunit = organization %% "fs2-kafka-vulcan-testkit-munit" % version
 }
 
 trait Http4s {
@@ -63,6 +63,14 @@ trait Http4s {
   val http4sCore = organization %% "http4s-core" % version
   val http4sDsl = organization %% "http4s-dsl" % version
   val http4sEmberServer = organization %% "http4s-ember-server" % version
+  val http4sServer = organization %% "http4s-server" % version
+}
+
+trait CaseInsensitive {
+  private[this] val organization = "org.typelevel"
+  private[this] val version = "1.2.0"
+
+  val caseInsensitive = organization %% "case-insensitive" % version
 }
 
 trait Ip4s {
@@ -119,6 +127,7 @@ trait Vulcan {
 
 object Dependencies
     extends Avro
+    with CaseInsensitive
     with Cats
     with Circe
     with Ciris

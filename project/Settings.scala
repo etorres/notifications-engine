@@ -21,11 +21,15 @@ object Settings {
   }
 
   private[this] val warts: Seq[wartremover.Wart] =
-    Warts.unsafe.filter(x => !List(Wart.DefaultArguments, Wart.Null).contains(x))
+    Warts.unsafe.filter(x =>
+      !List(Wart.DefaultArguments, Wart.OptionPartial, Wart.Null).contains(x),
+    )
 
   private[this] val basePackage = "es.eriktorr.notification_engine"
 
   def fqClassNameFrom(className: String): Option[String] = Some(s"$basePackage.$className")
+
+  private[this] val MUnitFramework = new TestFramework("munit.Framework")
 
   private[this] def commonSettings(projectName: String): Def.SettingsDefinition = Seq(
     name := projectName,
@@ -42,6 +46,8 @@ object Settings {
     Test / compile / wartremoverErrors ++= warts,
     ThisBuild / semanticdbEnabled := true,
     ThisBuild / semanticdbVersion := scalafixSemanticdb.revision,
+    testFrameworks += MUnitFramework,
+    Test / testOptions += Tests.Argument(MUnitFramework, "--exclude-tags=online"),
     scalacOptions ++= Seq(
       "-Xfatal-warnings",
       "-deprecation",

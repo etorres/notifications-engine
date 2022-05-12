@@ -15,8 +15,10 @@ object Generators:
     text <- Gen.listOfN[Char](length, Gen.alphaNumChar).map(_.mkString)
   yield text
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   val eventIdGen: Gen[EventId] = Gen.uuid.map(uuid => EventId.from(uuid.toString).toOption.get)
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] val hostGen: Gen[Host] = Gen
     .frequency(
       5 -> Gen.oneOf("127.0.0.1", "10.1.2.0", "::1", "::7f00:1", "ff3b::"),
@@ -24,14 +26,18 @@ object Generators:
     )
     .map(host => Host.fromString(host).get)
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] val messageBodyGen: Gen[MessageBody] =
     textGen(1, 24).map(MessageBody.from(_).toOption.get)
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] val messageSubjectGen: Gen[MessageSubject] =
     textGen(1, 12).map(MessageSubject.from(_).toOption.get)
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] val payloadGen: Gen[Payload] = textGen(1, 24).map(Payload.from(_).toOption.get)
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] val portGen: Gen[Port] = Gen.choose(0, 65535).map(port => Port.fromInt(port).get)
 
   /** @see
@@ -55,6 +61,7 @@ object Generators:
       path <- pathGen
     yield http + "://" + domain + "." + domainType + "/" + path
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] def userGen[A <: Role]: Gen[User[A]] = textGen().map(User.from[A](_).toOption.get)
 
   private[this] val emailMessageGen: Gen[EmailMessage] = for
