@@ -1,6 +1,6 @@
 package es.eriktorr.notification_engine
 
-import infrastructure.KafkaEventHandler
+import infrastructure.{KafkaEventHandler, LoggingMessageDispatcher}
 
 import cats.effect.{ExitCode, IO, IOApp}
 import org.typelevel.log4cats.Logger
@@ -10,9 +10,10 @@ object NotificationsDispatcherApp extends IOApp:
   private[this] def program(config: NotificationsDispatcherConfig, logger: Logger[IO]) =
     NotificationsDispatcherResources.impl(config).use {
       case NotificationsDispatcherResources(kafkaConsumer) =>
+        val messageDispatcher = LoggingMessageDispatcher(logger)
         logger.info(s"Started Kafka event handler") *> KafkaEventHandler(
           kafkaConsumer,
-          ???, /* TODO */
+          messageDispatcher,
         ).handle.compile.drain
     }
 

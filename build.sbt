@@ -35,7 +35,13 @@ lazy val `notifications-dispatcher` =
       vulcan,
     )
     .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
-    .testDependencies()
+    .testDependencies(
+      munit,
+      munitCatsEffect,
+      munitScalacheck,
+      scalacheckEffect,
+      scalacheckEffectMunit,
+    )
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsDispatcherApp"))
 
 lazy val `notifications-gateway` =
