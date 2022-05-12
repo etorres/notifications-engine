@@ -2,7 +2,7 @@ package es.eriktorr.notification_engine
 package integration
 
 import Generators.{eventIdGen, messageGen}
-import Message.{EmailMessage, SmsMessage}
+import Message.{EmailMessage, SmsMessage, WebhookMessage}
 import User.{Addressee, Sender}
 import infrastructure.FakeMessageSender.FakeMessageSenderState
 import infrastructure.{FakeMessageSender, HttpServer}
@@ -25,7 +25,8 @@ final class HttpServerIntegrationTest
     with ScalaCheckEffectSuite
     with EmailMessageJson
     with EventIdJson
-    with SmsMessageJson:
+    with SmsMessageJson
+    with WebhookMessageJson:
 
   test("it should send a message") {
     def requestFrom[A <: Message](uri: String, message: A)(implicit ev: Encoder[A]) = Request(
@@ -44,6 +45,8 @@ final class HttpServerIntegrationTest
           testCase.message match
             case emailMessage: EmailMessage => requestFrom[EmailMessage]("email", emailMessage)
             case smsMessage: SmsMessage => requestFrom[SmsMessage]("sms", smsMessage)
+            case webhookMessage: WebhookMessage =>
+              requestFrom[WebhookMessage]("webhook", webhookMessage)
           ,
           Status.Created,
           Some(testCase.eventId),

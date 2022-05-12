@@ -54,7 +54,8 @@ lazy val `notifications-gateway` =
     )
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
 
-lazy val models = project.library("models").mainDependencies(catsCore).testDependencies(scalacheck)
+lazy val models =
+  project.library("models").mainDependencies(catsCore, ip4sCore).testDependencies(scalacheck)
 
 lazy val `models-avro` = project
   .library("models-avro")

@@ -11,7 +11,7 @@ trait SmsMessageJson extends MessageBodyJson with UserJson:
     for
       body <- cursor.downField("body").as[MessageBody]
       from <- cursor.downField("from").as[User[Sender]]
-      to <- cursor.downField("from").as[User[Addressee]]
+      to <- cursor.downField("to").as[User[Addressee]]
     yield SmsMessage(body, from, to)
 
   implicit val smsMessageEncoder: Encoder[SmsMessage] = deriveEncoder[SmsMessage]

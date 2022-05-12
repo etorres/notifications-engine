@@ -12,7 +12,7 @@ trait EmailMessageJson extends MessageBodyJson with MessageSubjectJson with User
       body <- cursor.downField("body").as[MessageBody]
       subject <- cursor.downField("body").as[MessageSubject]
       from <- cursor.downField("from").as[User[Sender]]
-      to <- cursor.downField("from").as[User[Addressee]]
+      to <- cursor.downField("to").as[User[Addressee]]
     yield EmailMessage(body, subject, from, to)
 
   implicit val emailMessageEncoder: Encoder[EmailMessage] = deriveEncoder[EmailMessage]

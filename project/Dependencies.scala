@@ -65,6 +65,13 @@ trait Http4s {
   val http4sEmberServer = organization %% "http4s-ember-server" % version
 }
 
+trait Ip4s {
+  private[this] val organization = "com.comcast"
+  private[this] val version = "3.1.2"
+
+  val ip4sCore = organization %% "ip4s-core" % version
+}
+
 trait Log4cats {
   private[this] val organization = "org.typelevel"
   private[this] val version = "2.3.1"
@@ -118,6 +125,7 @@ object Dependencies
     with Fs2
     with Fs2kafka
     with Http4s
+    with Ip4s
     with Log4cats
     with Log4j
     with Munit
