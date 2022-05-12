@@ -7,7 +7,7 @@ import infrastructure.FakeMessageSender.FakeMessageSenderState
 import cats.effect.{IO, Ref}
 
 final class FakeMessageSender(stateRef: Ref[IO, FakeMessageSenderState]) extends MessageSender:
-  override def send[A <: Message](message: A): IO[EventId] = stateRef.modify { currentState =>
+  override def send(message: Message): IO[EventId] = stateRef.modify { currentState =>
     val (head, next) = currentState.eventIds match
       case ::(head, next) => (head, next)
       case Nil => throw new IllegalStateException("Event Ids exhausted")

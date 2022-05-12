@@ -4,4 +4,4 @@ package domain
 import cats.effect.IO
 
 trait MessageDispatcher:
-  def dispatch[A <: Message](message: A): IO[Unit]
+  def dispatch(message: Message): IO[Unit]

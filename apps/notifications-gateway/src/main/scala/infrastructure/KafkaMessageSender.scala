@@ -13,7 +13,7 @@ import java.util.UUID
 final class KafkaMessageSender(eventPublisher: EventPublisher)
     extends MessageSender
     with MessageJson:
-  override def send[A <: Message](message: A): IO[EventId] = for
+  override def send(message: Message): IO[EventId] = for
     payload <- IO.fromEither(Payload.from(message.asJson.noSpaces))
     eventId <- IO.delay(EventId.from(UUID.randomUUID().nn))
     _ <- eventPublisher.publish(

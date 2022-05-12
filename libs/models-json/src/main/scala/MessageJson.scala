@@ -2,22 +2,21 @@ package es.eriktorr.notification_engine
 
 import Message.{EmailMessage, SmsMessage, WebhookMessage}
 
-import io.circe.{Decoder, Encoder, HCursor, Json}
+import cats.syntax.functor.*
+import io.circe.generic.auto.*
+import io.circe.syntax.*
+import io.circe.{Decoder, Encoder}
 
 trait MessageJson extends EmailMessageJson with SmsMessageJson with WebhookMessageJson:
-  implicit def messageDecoder[A <: Message]: Decoder[A] = (cursor: HCursor) =>
-    for
-      media <- cursor.downField("media").as[String]
-      _ = media match
-        case "email" => cursor.downField("content").as[EmailMessage](emailMessageDecoder)
-        case "sms" => ???
-        case "webhook" => ???
-        case _ => ???
-    yield ???
+  @SuppressWarnings(Array("org.wartremover.warts.IterableOps"))
+  implicit val messageDecoder: Decoder[Message] = List[Decoder[Message]](
+    Decoder[EmailMessage].widen,
+    Decoder[SmsMessage].widen,
+    Decoder[WebhookMessage].widen,
+  ).reduceLeft(_ or _)
 
-  implicit def messageEncoder[A <: Message]: Encoder[A] = (a: A) =>
-    val (media, content) = a match
-      case emailMessage: EmailMessage => ("email", emailMessageEncoder(emailMessage))
-      case smsMessage: SmsMessage => ("sms", smsMessageEncoder(smsMessage))
-      case webhookMessage: WebhookMessage => ("webhook", webhookMessageEncoder(webhookMessage))
-    Json.obj(("media", Json.fromString(media)), ("content", content))
+  implicit val messageEncoder: Encoder[Message] = Encoder.instance {
+    case emailMessage @ EmailMessage(_, _, _, _) => emailMessage.asJson
+    case smsMessage @ SmsMessage(_, _, _) => smsMessage.asJson
+    case webhookMessage @ WebhookMessage(_, _, _, _) => webhookMessage.asJson
+  }
