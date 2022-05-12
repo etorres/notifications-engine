@@ -1,6 +1,7 @@
 package es.eriktorr.notification_engine
 package infrastructure
 
+import Message.{EmailMessage, SmsMessage}
 import NotificationsGatewayConfig.HttpServerConfig
 import domain.MessageSender
 
@@ -14,14 +15,24 @@ import org.http4s.implicits.*
 import org.http4s.server.middleware.{CORS, GZip, Logger as Http4sLogger}
 import org.http4s.{HttpApp, HttpRoutes}
 
-final class HttpServer(messageSender: MessageSender) extends EventIdJson with SmsMessageJson:
+final class HttpServer(messageSender: MessageSender)
+    extends EventIdJson
+    with EmailMessageJson
+    with SmsMessageJson:
   val httpApp: HttpApp[IO] = HttpRoutes
-    .of[IO] { case request @ POST -> Root / "api" / "v1" / "sms" =>
-      for
-        smsMessage <- request.as[SmsMessage]
-        eventId <- messageSender.send(smsMessage)
-        response <- Created(eventId.asJson)
-      yield response
+    .of[IO] {
+      case request @ POST -> Root / "api" / "v1" / "email" =>
+        for
+          emailMessage <- request.as[EmailMessage]
+          eventId <- messageSender.send(emailMessage)
+          response <- Created(eventId.asJson)
+        yield response
+      case request @ POST -> Root / "api" / "v1" / "sms" =>
+        for
+          smsMessage <- request.as[SmsMessage]
+          eventId <- messageSender.send(smsMessage)
+          response <- Created(eventId.asJson)
+        yield response
     }
     .orNotFound
 

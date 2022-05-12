@@ -1,5 +1,6 @@
 package es.eriktorr.notification_engine
 
+import Message.SmsMessage
 import User.{Addressee, Sender}
 
 import io.circe.*

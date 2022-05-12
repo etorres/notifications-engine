@@ -1,7 +1,8 @@
 package es.eriktorr.notification_engine
 package integration
 
-import Generators.{eventIdGen, messageBodyGen, userGen}
+import Generators.{eventIdGen, messageGen}
+import Message.{EmailMessage, SmsMessage}
 import User.{Addressee, Sender}
 import infrastructure.FakeMessageSender.FakeMessageSenderState
 import infrastructure.{FakeMessageSender, HttpServer}
@@ -9,22 +10,30 @@ import integration.HttpServerIntegrationTest.{check, testCaseGen}
 
 import cats.effect.{IO, Ref}
 import cats.implicits.*
+import io.circe.Encoder
 import munit.Assertions.assertEquals
 import munit.{CatsEffectSuite, ScalaCheckEffectSuite}
 import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 import org.http4s.circe.jsonEncoderOf
 import org.http4s.implicits.*
-import org.http4s.{EntityDecoder, HttpApp, Method, Request, Response, Status}
+import org.http4s.{EntityDecoder, HttpApp, Method, Request, Response, Status, Uri}
 import org.scalacheck.Gen
 import org.scalacheck.effect.PropF.forAllF
 
 final class HttpServerIntegrationTest
     extends CatsEffectSuite
     with ScalaCheckEffectSuite
+    with EmailMessageJson
     with EventIdJson
     with SmsMessageJson:
 
-  test("it should send an SMS message") {
+  test("it should send a message") {
+    def requestFrom[A <: Message](uri: String, message: A)(implicit ev: Encoder[A]) = Request(
+      method = Method.POST,
+      uri = Uri.unsafeFromString(s"api/v1/$uri"),
+      body = jsonEncoderOf[IO, A].toEntity(message).body,
+    )
+
     forAllF(testCaseGen) { testCase =>
       for
         messageSenderStateRef <- Ref.of[IO, FakeMessageSenderState](
@@ -32,11 +41,10 @@ final class HttpServerIntegrationTest
         )
         _ <- check(
           HttpServer(FakeMessageSender(messageSenderStateRef)).httpApp,
-          Request(
-            method = Method.POST,
-            uri = uri"api/v1/sms",
-            body = jsonEncoderOf[IO, SmsMessage].toEntity(testCase.smsMessage).body,
-          ),
+          testCase.message match
+            case emailMessage: EmailMessage => requestFrom[EmailMessage]("email", emailMessage)
+            case smsMessage: SmsMessage => requestFrom[SmsMessage]("sms", smsMessage)
+          ,
           Status.Created,
           Some(testCase.eventId),
         )
@@ -45,15 +53,12 @@ final class HttpServerIntegrationTest
   }
 
 object HttpServerIntegrationTest:
-  final private case class TestCase(smsMessage: SmsMessage, eventId: EventId)
+  final private case class TestCase(message: Message, eventId: EventId)
 
-  private val testCaseGen: Gen[TestCase] =
-    for
-      body <- messageBodyGen
-      from <- userGen[Sender]
-      to <- userGen[Addressee]
-      eventId <- eventIdGen
-    yield TestCase(SmsMessage(body, from, to), eventId)
+  private val testCaseGen: Gen[TestCase] = for
+    message <- messageGen
+    eventId <- eventIdGen
+  yield TestCase(message, eventId)
 
   def check[A](
       httpApp: HttpApp[IO],
