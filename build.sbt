@@ -9,6 +9,7 @@ lazy val `notifications-engine` =
     .aggregate(
       models,
       `models-avro`,
+      `models-ciris`,
       `models-json`,
       `notifications-dispatcher`,
       `notifications-gateway`,
@@ -17,8 +18,20 @@ lazy val `notifications-engine` =
 lazy val `notifications-dispatcher` =
   project
     .application("notifications-dispatcher")
-    .dependsOn(models % "test->test;compile->compile")
-    .mainDependencies()
+    .dependsOn(models % "test->test;compile->compile", `models-avro`, `models-ciris`, `models-json`)
+    .mainDependencies(
+      catsCore,
+      catsEffect,
+      catsEffectKernel,
+      ciris,
+      fs2Core,
+      fs2kafka,
+      fs2kafkaVulcan,
+      ip4sCore,
+      log4catsCore,
+      log4catsSlf4j,
+      vulcan,
+    )
     .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
     .testDependencies()
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsDispatcherApp"))
@@ -26,7 +39,7 @@ lazy val `notifications-dispatcher` =
 lazy val `notifications-gateway` =
   project
     .application("notifications-gateway")
-    .dependsOn(models % "test->test;compile->compile", `models-avro`, `models-json`)
+    .dependsOn(models % "test->test;compile->compile", `models-avro`, `models-ciris`, `models-json`)
     .mainDependencies(
       caseInsensitive,
       catsCore,
@@ -59,12 +72,17 @@ lazy val `notifications-gateway` =
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
 
 lazy val models =
-  project.library("models").mainDependencies(ip4sCore).testDependencies(scalacheck)
+  project.library("models").mainDependencies(catsCore, ip4sCore).testDependencies(scalacheck)
 
 lazy val `models-avro` = project
   .library("models-avro")
   .dependsOn(models % "test->test;compile->compile")
   .mainDependencies(avro, catsCore, catsFree, vulcan)
+
+lazy val `models-ciris` = project
+  .library("models-ciris")
+  .dependsOn(models % "test->test;compile->compile")
+  .mainDependencies(catsCore, ciris)
 
 lazy val `models-json` = project
   .library("models-json")

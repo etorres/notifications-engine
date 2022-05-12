@@ -1,7 +1,7 @@
 package es.eriktorr.notification_engine
 package infrastructure
 
-import NotificationsGatewayConfig.KafkaConfig
+import config.KafkaConfig
 
 import cats.effect.{IO, Resource}
 import fs2.kafka.vulcan.{avroSerializer, AvroSettings, SchemaRegistryClientSettings}
