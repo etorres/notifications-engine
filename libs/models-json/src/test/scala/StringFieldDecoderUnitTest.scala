@@ -11,7 +11,7 @@ import scala.util.control.NoStackTrace
 
 final class StringFieldDecoderUnitTest extends FunSuite with StringFieldDecoder:
 
-  test("should decode nested values") {
+  test("it should decode nested values") {
     assertEquals(
       for
         json <- parse("{\"testEntity\":\"ok\"}")
@@ -21,7 +21,7 @@ final class StringFieldDecoderUnitTest extends FunSuite with StringFieldDecoder:
     )
   }
 
-  test("should decode simple values") {
+  test("it should decode simple values") {
     assertEquals(
       for
         json <- parse("\"ok\"")
@@ -31,7 +31,7 @@ final class StringFieldDecoderUnitTest extends FunSuite with StringFieldDecoder:
     )
   }
 
-  test("should fail with decoding failure when parsing illegal values") {
+  test("it should fail with decoding failure when parsing illegal values") {
     assertEquals(
       for
         json <- parse("\"wrong\"")

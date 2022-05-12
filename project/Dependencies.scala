@@ -32,6 +32,13 @@ trait Circe {
   val circeParser = organization %% "circe-parser" % version
 }
 
+trait Ciris {
+  private[this] val organization = "is.cir"
+  private[this] val version = "2.3.2"
+
+  val ciris = organization %% "ciris" % version
+}
+
 trait Fs2 {
   private[this] val organization = "co.fs2"
   private[this] val version = "3.2.7"
@@ -89,6 +96,13 @@ trait Munit {
   val scalacheckEffectMunit = typelevelOrg %% "scalacheck-effect-munit" % scalacheckEffectVersion
 }
 
+trait Scalacheck {
+  private[this] val organization = "org.scalacheck"
+  private[this] val version = "1.16.0"
+
+  val scalacheck = organization %% "scalacheck" % version
+}
+
 trait Vulcan {
   private[this] val organization = "com.github.fd4s"
   private[this] val version = "1.8.3"
@@ -100,10 +114,12 @@ object Dependencies
     extends Avro
     with Cats
     with Circe
+    with Ciris
     with Fs2
     with Fs2kafka
     with Http4s
     with Log4cats
     with Log4j
     with Munit
+    with Scalacheck
     with Vulcan

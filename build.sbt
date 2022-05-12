@@ -32,6 +32,7 @@ lazy val `notifications-gateway` =
       catsEffect,
       catsEffectKernel,
       circeCore,
+      ciris,
       fs2Core,
       fs2Io,
       fs2kafka,
@@ -53,7 +54,7 @@ lazy val `notifications-gateway` =
     )
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
 
-lazy val models = project.library("models").mainDependencies(catsCore)
+lazy val models = project.library("models").mainDependencies(catsCore).testDependencies(scalacheck)
 
 lazy val `models-avro` = project
   .library("models-avro")
