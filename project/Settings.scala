@@ -25,7 +25,7 @@ object Settings {
       !List(Wart.DefaultArguments, Wart.IterableOps, Wart.OptionPartial, Wart.Null).contains(x),
     )
 
-  private[this] val basePackage = "es.eriktorr.notification_engine"
+  private[this] val basePackage = "es.eriktorr.notifications_engine"
 
   def fqClassNameFrom(className: String): Option[String] = Some(s"$basePackage.$className")
 

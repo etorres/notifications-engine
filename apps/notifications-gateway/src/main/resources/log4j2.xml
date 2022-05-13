@@ -6,7 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="es.eriktorr.notification_engine" level="info" additivity="false">
+        <Logger name="es.eriktorr.notifications_engine" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="org.http4s.server.middleware.Logger" level="info" additivity="false">

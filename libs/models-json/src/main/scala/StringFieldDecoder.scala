@@ -1,15 +1,15 @@
-package es.eriktorr.notification_engine
+package es.eriktorr.notifications_engine
 
 import io.circe.{Decoder, DecodingFailure, HCursor}
 
 trait StringFieldDecoder:
-  private[notification_engine] def decode[A](
+  private[notifications_engine] def decode[A](
       field: String,
       fA: String => Either[? <: Throwable, A],
   ): Decoder[A] =
     (cursor: HCursor) => cursor.downField(field).as[String].flatMap(valueOf(_, fA))
 
-  private[notification_engine] def decodeValue[A](
+  private[notifications_engine] def decodeValue[A](
       fA: String => Either[? <: Throwable, A],
   ): Decoder[A] =
     (cursor: HCursor) => cursor.as[String].flatMap(valueOf(_, fA))

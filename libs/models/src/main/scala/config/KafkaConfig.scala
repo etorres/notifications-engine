@@ -1,4 +1,4 @@
-package es.eriktorr.notification_engine
+package es.eriktorr.notifications_engine
 package config
 
 import config.KafkaConfig.{BootstrapServer, ConsumerGroup, SchemaRegistry, Topic}

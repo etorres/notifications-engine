@@ -1,4 +1,4 @@
-package es.eriktorr.notification_engine
+package es.eriktorr.notifications_engine
 
 import com.comcast.ip4s.Port
 import io.circe.{Decoder, Encoder, Json}

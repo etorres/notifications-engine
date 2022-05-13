@@ -1,4 +1,4 @@
-package es.eriktorr.notification_engine
+package es.eriktorr.notifications_engine
 
 object AvroNamespaces:
-  val default: String = "es.eriktorr.notification_engine"
+  val default: String = "es.eriktorr.notifications_engine"

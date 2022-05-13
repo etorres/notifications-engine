@@ -1,4 +1,4 @@
-package es.eriktorr.notification_engine
+package es.eriktorr.notifications_engine
 
 import Message.EmailMessage
 import User.{Addressee, Sender}
