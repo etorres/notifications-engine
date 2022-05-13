@@ -5,13 +5,7 @@ import config.KafkaConfig
 
 import cats.effect.{IO, Resource}
 import fs2.kafka.vulcan.{avroDeserializer, AvroSettings, SchemaRegistryClientSettings}
-import fs2.kafka.{
-  AutoOffsetReset,
-  ConsumerSettings,
-  Deserializer,
-  KafkaConsumer,
-  RecordDeserializer,
-}
+import fs2.kafka.{AutoOffsetReset, ConsumerSettings, KafkaConsumer, RecordDeserializer}
 
 object KafkaClient extends EventAvroCodec:
   def consumerWith(kafkaConfig: KafkaConfig): Resource[IO, KafkaConsumer[IO, String, Event]] =
@@ -19,14 +13,11 @@ object KafkaClient extends EventAvroCodec:
       SchemaRegistryClientSettings[IO](kafkaConfig.schemaRegistry.value)
     }
 
-    val eventDeserializer: RecordDeserializer[IO, Event] =
-      avroDeserializer[Event](eventAvroCodec).using(avroSettings)
+    implicit val eventDeserializer: RecordDeserializer[IO, Event] =
+      avroDeserializer[Event].using(avroSettings)
 
     val consumerSettings =
-      ConsumerSettings[IO, String, Event](
-        keyDeserializer = Deserializer[IO, String],
-        valueDeserializer = eventDeserializer,
-      )
+      ConsumerSettings[IO, String, Event]
         .withAutoOffsetReset(AutoOffsetReset.Earliest)
         .withBootstrapServers(kafkaConfig.bootstrapServersAsString)
         .withGroupId(kafkaConfig.consumerGroup.value)

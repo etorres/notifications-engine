@@ -1,6 +1,7 @@
 package es.eriktorr.notification_engine
 
-import infrastructure.{HttpServer, KafkaEventPublisher, KafkaMessageSender}
+import domain.MessageSender
+import infrastructure.{HttpServer, KafkaEventPublisher}
 
 import cats.effect.{ExitCode, IO, IOApp}
 import org.typelevel.log4cats.Logger
@@ -12,7 +13,7 @@ object NotificationsGatewayApp extends IOApp:
       case NotificationsGatewayResources(kafkaProducer) =>
         val eventPublisher =
           KafkaEventPublisher(kafkaProducer, config.kafkaConfig.topic.value, logger)
-        val messageSender = KafkaMessageSender(eventPublisher)
+        val messageSender = MessageSender.impl(eventPublisher)
         logger.info(s"Started HTTP server") *> HttpServer
           .runWith(messageSender, config.httpServerConfig)
     }
