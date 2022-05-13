@@ -27,7 +27,7 @@ final class HttpServer(messageSender: MessageSender) extends EventIdJsonCodec wi
   private[this] def send(request: Request[IO]) = for
     message <- request.as[Message]
     eventId <- messageSender.send(message)
-    response <- Created(eventId.asJson)
+    response <- Created(eventId.asJson.noSpaces)
   yield response
 
 object HttpServer:
