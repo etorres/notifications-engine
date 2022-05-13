@@ -1,6 +1,6 @@
 package es.eriktorr.notifications_engine
 
-import infrastructure.KafkaClient
+import infrastructure.KafkaClients
 
 import cats.effect.{IO, Resource}
 import fs2.kafka.KafkaConsumer
@@ -9,4 +9,4 @@ final case class NotificationsDispatcherResources(kafkaConsumer: KafkaConsumer[I
 
 object NotificationsDispatcherResources:
   def impl(config: NotificationsDispatcherConfig): Resource[IO, NotificationsDispatcherResources] =
-    KafkaClient.consumerWith(config.kafkaConfig).map(NotificationsDispatcherResources(_))
+    KafkaClients.eventConsumerUsing(config.kafkaConfig).map(NotificationsDispatcherResources(_))

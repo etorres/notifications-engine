@@ -118,6 +118,13 @@ trait Scalacheck {
   val scalacheck = organization %% "scalacheck" % version
 }
 
+trait SchemaRegistry {
+  private[this] val organization = "io.confluent"
+  private[this] val version = "6.2.2"
+
+  val schemaRegistryClient = organization % "kafka-schema-registry-client" % version
+}
+
 trait Vulcan {
   private[this] val organization = "com.github.fd4s"
   private[this] val version = "1.8.3"
@@ -139,4 +146,5 @@ object Dependencies
     with Log4j
     with Munit
     with Scalacheck
+    with SchemaRegistry
     with Vulcan

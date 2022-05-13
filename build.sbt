@@ -7,6 +7,7 @@ lazy val `notifications-engine` =
   project
     .root("notifications-engine")
     .aggregate(
+      `kafka-clients`,
       models,
       `models-avro`,
       `models-ciris`,
@@ -18,7 +19,13 @@ lazy val `notifications-engine` =
 lazy val `notifications-dispatcher` =
   project
     .application("notifications-dispatcher")
-    .dependsOn(models % "test->test;compile->compile", `models-avro`, `models-ciris`, `models-json`)
+    .dependsOn(
+      `kafka-clients` % "test->test;compile->compile",
+      models % "test->test;compile->compile",
+      `models-avro`,
+      `models-ciris`,
+      `models-json`,
+    )
     .mainDependencies(
       catsCore,
       catsEffect,
@@ -26,11 +33,9 @@ lazy val `notifications-dispatcher` =
       ciris,
       fs2Core,
       fs2kafka,
-      fs2kafkaVulcan,
       ip4sCore,
       log4catsCore,
       log4catsSlf4j,
-      vulcan,
     )
     .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
     .testDependencies(
@@ -45,7 +50,13 @@ lazy val `notifications-dispatcher` =
 lazy val `notifications-gateway` =
   project
     .application("notifications-gateway")
-    .dependsOn(models % "test->test;compile->compile", `models-avro`, `models-ciris`, `models-json`)
+    .dependsOn(
+      `kafka-clients` % "test->test;compile->compile",
+      models % "test->test;compile->compile",
+      `models-avro`,
+      `models-ciris`,
+      `models-json`,
+    )
     .mainDependencies(
       caseInsensitive,
       catsCore,
@@ -55,7 +66,6 @@ lazy val `notifications-gateway` =
       ciris,
       fs2Core,
       fs2kafka,
-      fs2kafkaVulcan,
       http4sCirce,
       http4sCore,
       http4sDsl,
@@ -64,7 +74,6 @@ lazy val `notifications-gateway` =
       ip4sCore,
       log4catsCore,
       log4catsSlf4j,
-      vulcan,
     )
     .runtimeDependencies(log4jApi, log4jCore, log4jSlf4jImpl)
     .testDependencies(
@@ -77,8 +86,33 @@ lazy val `notifications-gateway` =
     )
     .settings(Compile / mainClass := fqClassNameFrom("NotificationsGatewayApp"))
 
+lazy val `kafka-clients` = project
+  .library("kafka-clients")
+  .dependsOn(models % "test->test;compile->compile", `models-avro`)
+  .mainDependencies(
+    avro,
+    catsCore,
+    catsEffect,
+    catsEffectKernel,
+    fs2kafka,
+    fs2kafkaVulcan,
+    schemaRegistryClient,
+    vulcan,
+  )
+  .testDependencies(
+    fs2kafkaVulcanTestkitMunit,
+    log4jApi,
+    log4jCore,
+    log4jSlf4jImpl,
+    munit,
+    munitCatsEffect,
+    munitScalacheck,
+    scalacheckEffect,
+    scalacheckEffectMunit,
+  )
+
 lazy val models =
-  project.library("models").mainDependencies(catsCore, ip4sCore).testDependencies(scalacheck)
+  project.library("models").mainDependencies(catsCore, ip4sCore).testDependencies(munit, scalacheck)
 
 lazy val `models-avro` = project
   .library("models-avro")
