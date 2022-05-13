@@ -10,7 +10,8 @@ object NotificationsGatewayApp extends IOApp:
   private[this] def program(config: NotificationsGatewayConfig, logger: Logger[IO]) =
     NotificationsGatewayResources.impl(config).use {
       case NotificationsGatewayResources(kafkaProducer) =>
-        val eventPublisher = KafkaEventPublisher(kafkaProducer, config.kafkaConfig.topic.value)
+        val eventPublisher =
+          KafkaEventPublisher(kafkaProducer, config.kafkaConfig.topic.value, logger)
         val messageSender = KafkaMessageSender(eventPublisher)
         logger.info(s"Started HTTP server") *> HttpServer
           .runWith(messageSender, config.httpServerConfig)

@@ -13,7 +13,9 @@ import org.http4s.dsl.io.*
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.implicits.*
 import org.http4s.server.middleware.{CORS, GZip, Logger as Http4sLogger}
-import org.http4s.{HttpApp, HttpRoutes, Request}
+import org.http4s.{HttpApp, HttpRoutes, Method, Request}
+
+import scala.concurrent.duration.DurationInt
 
 final class HttpServer(messageSender: MessageSender) extends EventIdJsonCodec with MessageJsonCodec:
   val httpApp: HttpApp[IO] = HttpRoutes
@@ -35,7 +37,11 @@ object HttpServer:
     val httpServer = HttpServer(messageSender)
 
     val enhancedHttpApp = Http4sLogger.httpApp(logHeaders = true, logBody = true)(
-      CORS.policy.withAllowOriginAll(GZip(httpServer.httpApp)),
+      CORS.policy.withAllowOriginAll
+        .withAllowMethodsIn(Set(Method.GET, Method.POST))
+        .withAllowCredentials(false)
+        .withMaxAge(1.day)
+        .apply(GZip(httpServer.httpApp)),
     )
 
     EmberServerBuilder
