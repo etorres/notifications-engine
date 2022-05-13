@@ -1,6 +1,7 @@
 package es.eriktorr.notification_engine
 package integration
 
+import config.KafkaConfig
 import infrastructure.TestFilters.online
 
 import fs2.kafka.vulcan.SchemaRegistryClientSettings
@@ -14,14 +15,14 @@ final class AvroSchemaCompatibilityTest
     with SchemaSuite
     with EventAvroCodec:
   private[this] val checker = compatibilityChecker(
-    SchemaRegistryClientSettings("http://localhost:8081"),
+    SchemaRegistryClientSettings(KafkaConfig.default.schemaRegistry.value),
   )
 
   override def munitFixtures: Seq[Fixture[?]] = List(checker)
 
   test("event codec should be compatible".tag(online)) {
     checker()
-      .checkReaderCompatibility(eventAvroCodec, "notifications-engine-tests-value")
+      .checkReaderCompatibility(eventAvroCodec, s"${KafkaConfig.default.topic}-value")
       .map(compatibility =>
         assertEquals(
           compatibility.getType(),
