@@ -16,5 +16,4 @@ object NotificationError:
   final case class InvalidEventId(message: String) extends NotificationError(message)
   final case class InvalidMessageBody(message: String) extends NotificationError(message)
   final case class InvalidMessageSubject(message: String) extends NotificationError(message)
-  final case class InvalidPayload(message: String) extends NotificationError(message)
   final case class InvalidUser(message: String) extends NotificationError(message)

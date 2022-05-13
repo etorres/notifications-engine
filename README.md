@@ -10,10 +10,17 @@ This is an adaptation of the blog entry [Building High-Performance Notification 
 
 ```commandline
 curl --request POST 
+     --url http://localhost:8080/api/v1/email
+     --header 'content-type: application/json'
+     --data '{"body":"Hello","subject":"Greetings from Mary","from":{"user":"Mary"},"to":{"user":"Rose"}}' 
+```
+```commandline
+curl --request POST 
      --url http://localhost:8080/api/v1/sms
      --header 'content-type: application/json'
      --data '{"body":"Hi!","from":{"user":"John"},"to":{"user":"Jane"}}' 
 ```
+
 ## Build binary packages
 
 ```commandline

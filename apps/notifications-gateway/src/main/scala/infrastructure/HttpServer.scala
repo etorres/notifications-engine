@@ -1,7 +1,6 @@
 package es.eriktorr.notification_engine
 package infrastructure
 
-import Message.{EmailMessage, SmsMessage, WebhookMessage}
 import NotificationsGatewayConfig.HttpServerConfig
 import domain.MessageSender
 
@@ -16,21 +15,17 @@ import org.http4s.implicits.*
 import org.http4s.server.middleware.{CORS, GZip, Logger as Http4sLogger}
 import org.http4s.{HttpApp, HttpRoutes, Request}
 
-final class HttpServer(messageSender: MessageSender)
-    extends EventIdJsonCodec
-    with EmailMessageJsonCodec
-    with SmsMessageJsonCodec
-    with WebhookMessageJsonCodec:
+final class HttpServer(messageSender: MessageSender) extends EventIdJsonCodec with MessageJsonCodec:
   val httpApp: HttpApp[IO] = HttpRoutes
     .of[IO] {
-      case request @ POST -> Root / "api" / "v1" / "email" => send[EmailMessage](request)
-      case request @ POST -> Root / "api" / "v1" / "sms" => send[SmsMessage](request)
-      case request @ POST -> Root / "api" / "v1" / "webhook" => send[WebhookMessage](request)
+      case request @ POST -> Root / "api" / "v1" / "email" => send(request)
+      case request @ POST -> Root / "api" / "v1" / "sms" => send(request)
+      case request @ POST -> Root / "api" / "v1" / "webhook" => send(request)
     }
     .orNotFound
 
-  private[this] def send[A <: Message](request: Request[IO])(implicit ev: Decoder[A]) = for
-    message <- request.as[A]
+  private[this] def send(request: Request[IO]) = for
+    message <- request.as[Message]
     eventId <- messageSender.send(message)
     response <- Created(eventId.asJson)
   yield response

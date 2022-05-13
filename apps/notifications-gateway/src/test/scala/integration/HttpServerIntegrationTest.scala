@@ -40,6 +40,14 @@ final class HttpServerIntegrationTest
         messageSenderStateRef <- Ref.of[IO, FakeMessageSenderState](
           FakeMessageSenderState.empty.setEventIds(List(testCase.eventId)),
         )
+//        _ <- {
+//          import io.circe.syntax.*
+//          val trace = testCase.message match
+//            case emailMessage: EmailMessage => s" >> EMAIL: ${emailMessage.asJson.noSpaces}"
+//            case smsMessage: SmsMessage => s" >> SMS: ${smsMessage.asJson.noSpaces}"
+//            case webhookMessage: WebhookMessage => s" >> WEBHOOK: ${webhookMessage.asJson.noSpaces}"
+//          IO.blocking(println(trace))
+//        }
         _ <- check(
           HttpServer(FakeMessageSender(messageSenderStateRef)).httpApp,
           testCase.message match

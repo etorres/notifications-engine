@@ -35,7 +35,7 @@ trait EventAvroCodec extends EventIdAvroCodec with MessageAvroCodec:
     ) { field =>
       (
         field("id", _.id),
-        field("webhookSent", _.webhookMessage),
+        field("webhookMessage", _.webhookMessage),
       ).mapN(WebhookSent(_, _))
     }
 
