@@ -2,10 +2,10 @@ package es.eriktorr.notification_engine
 
 import vulcan.{AvroError, Codec}
 
-trait ChannelCodec:
-  implicit val channelCodec: Codec[Channel] = Codec.enumeration[Channel](
+trait ChannelAvroCodec:
+  implicit val channelAvroCodec: Codec[Channel] = Codec.enumeration[Channel](
     name = "Channel",
-    namespace = Namespaces.default,
+    namespace = AvroNamespaces.default,
     doc = Some("A notification channel"),
     symbols = List("email", "sms", "webhook"),
     encode = {

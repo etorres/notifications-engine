@@ -7,15 +7,18 @@ import io.circe.generic.auto.*
 import io.circe.syntax.*
 import io.circe.{Decoder, Encoder}
 
-trait MessageJson extends EmailMessageJson with SmsMessageJson with WebhookMessageJson:
+trait MessageJsonCodec
+    extends EmailMessageJsonCodec
+    with SmsMessageJsonCodec
+    with WebhookMessageJsonCodec:
   @SuppressWarnings(Array("org.wartremover.warts.IterableOps"))
-  implicit val messageDecoder: Decoder[Message] = List[Decoder[Message]](
+  implicit val messageJsonDecoder: Decoder[Message] = List[Decoder[Message]](
     Decoder[EmailMessage].widen,
     Decoder[SmsMessage].widen,
     Decoder[WebhookMessage].widen,
   ).reduceLeft(_ or _)
 
-  implicit val messageEncoder: Encoder[Message] = Encoder.instance {
+  implicit val messageJsonEncoder: Encoder[Message] = Encoder.instance {
     case emailMessage @ EmailMessage(_, _, _, _) => emailMessage.asJson
     case smsMessage @ SmsMessage(_, _, _) => smsMessage.asJson
     case webhookMessage @ WebhookMessage(_, _, _, _) => webhookMessage.asJson

@@ -14,7 +14,7 @@ final class KafkaEventHandler(
     consumer: KafkaConsumer[IO, String, Event],
     messageDispatcher: MessageDispatcher,
 ) extends EventHandler
-    with MessageJson:
+    with MessageJsonCodec:
   def handle: Stream[IO, Unit] = consumer.stream
     .mapAsync(16) { committable =>
       val event = committable.record.value

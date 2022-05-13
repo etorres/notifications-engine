@@ -1,4 +1,4 @@
 package es.eriktorr.notification_engine
 
-object Namespaces:
+object AvroNamespaces:
   val default: String = "es.eriktorr.notification_engine"

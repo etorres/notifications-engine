@@ -7,7 +7,7 @@ import cats.effect.{IO, Resource}
 import fs2.kafka.vulcan.{avroDeserializer, AvroSettings, SchemaRegistryClientSettings}
 import fs2.kafka.{AutoOffsetReset, ConsumerSettings, KafkaConsumer, RecordDeserializer}
 
-object KafkaClient extends EventCodec:
+object KafkaClient extends EventAvroCodec:
   def consumerWith(kafkaConfig: KafkaConfig): Resource[IO, KafkaConsumer[IO, String, Event]] =
     val avroSettings = AvroSettings {
       SchemaRegistryClientSettings[IO](kafkaConfig.schemaRegistry.value)

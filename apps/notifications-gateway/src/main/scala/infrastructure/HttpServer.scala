@@ -17,10 +17,10 @@ import org.http4s.server.middleware.{CORS, GZip, Logger as Http4sLogger}
 import org.http4s.{HttpApp, HttpRoutes, Request}
 
 final class HttpServer(messageSender: MessageSender)
-    extends EventIdJson
-    with EmailMessageJson
-    with SmsMessageJson
-    with WebhookMessageJson:
+    extends EventIdJsonCodec
+    with EmailMessageJsonCodec
+    with SmsMessageJsonCodec
+    with WebhookMessageJsonCodec:
   val httpApp: HttpApp[IO] = HttpRoutes
     .of[IO] {
       case request @ POST -> Root / "api" / "v1" / "email" => send[EmailMessage](request)

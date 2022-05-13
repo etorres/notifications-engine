@@ -23,10 +23,10 @@ import org.scalacheck.effect.PropF.forAllF
 final class HttpServerIntegrationTest
     extends CatsEffectSuite
     with ScalaCheckEffectSuite
-    with EmailMessageJson
-    with EventIdJson
-    with SmsMessageJson
-    with WebhookMessageJson:
+    with EmailMessageJsonCodec
+    with EventIdJsonCodec
+    with SmsMessageJsonCodec
+    with WebhookMessageJsonCodec:
 
   test("it should send a message") {
     def requestFrom[A <: Message](uri: String, message: A)(implicit ev: Encoder[A]) = Request(

@@ -3,11 +3,11 @@ package es.eriktorr.notification_engine
 import cats.syntax.all.*
 import vulcan.Codec
 
-trait EventCodec extends EventIdCodec with ChannelCodec with PayloadCodec:
-  implicit val eventCodec: Codec[Event] =
+trait EventAvroCodec extends EventIdAvroCodec with ChannelAvroCodec with PayloadAvroCodec:
+  implicit val eventAvroCodec: Codec[Event] =
     Codec.record(
       name = "Event",
-      namespace = Namespaces.default,
+      namespace = AvroNamespaces.default,
     ) { field =>
       (
         field("id", _.id),

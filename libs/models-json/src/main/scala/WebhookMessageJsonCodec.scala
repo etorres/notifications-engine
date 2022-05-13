@@ -8,8 +8,12 @@ import io.circe.generic.semiauto.*
 
 import java.net.URL
 
-trait WebhookMessageJson extends HostJson with PayloadJson with PortJson with UrlJson:
-  implicit val webhookMessageDecoder: Decoder[WebhookMessage] = (cursor: HCursor) =>
+trait WebhookMessageJsonCodec
+    extends HostJsonCodec
+    with PayloadJsonCodec
+    with PortJsonCodec
+    with UrlJsonCodec:
+  implicit val webhookMessageJsonDecoder: Decoder[WebhookMessage] = (cursor: HCursor) =>
     for
       payload <- cursor.downField("payload").as[Payload]
       host <- cursor.downField("host").as[Host]
@@ -17,4 +21,4 @@ trait WebhookMessageJson extends HostJson with PayloadJson with PortJson with Ur
       hookUrl <- cursor.downField("hookUrl").as[URL]
     yield WebhookMessage(payload, host, port, hookUrl)
 
-  implicit val webhookMessageEncoder: Encoder[WebhookMessage] = deriveEncoder[WebhookMessage]
+  implicit val webhookMessageJsonEncoder: Encoder[WebhookMessage] = deriveEncoder[WebhookMessage]

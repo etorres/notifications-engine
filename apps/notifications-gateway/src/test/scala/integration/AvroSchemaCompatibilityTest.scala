@@ -9,7 +9,10 @@ import munit.CatsEffectSuite
 import org.apache.avro.SchemaCompatibility.SchemaCompatibilityType
 import vulcan.Codec
 
-final class AvroSchemaCompatibilityTest extends CatsEffectSuite with SchemaSuite with EventCodec:
+final class AvroSchemaCompatibilityTest
+    extends CatsEffectSuite
+    with SchemaSuite
+    with EventAvroCodec:
   private[this] val checker = compatibilityChecker(
     SchemaRegistryClientSettings("http://localhost:8081"),
   )
@@ -18,7 +21,7 @@ final class AvroSchemaCompatibilityTest extends CatsEffectSuite with SchemaSuite
 
   test("event codec should be compatible".tag(online)) {
     checker()
-      .checkReaderCompatibility(eventCodec, "notifications-engine-tests-value")
+      .checkReaderCompatibility(eventAvroCodec, "notifications-engine-tests-value")
       .map(compatibility =>
         assertEquals(
           compatibility.getType(),
