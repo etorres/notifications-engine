@@ -23,8 +23,6 @@ lazy val `notifications-dispatcher` =
       catsCore,
       catsEffect,
       catsEffectKernel,
-      circeCore,
-      circeParser,
       ciris,
       fs2Core,
       fs2kafka,
@@ -85,7 +83,7 @@ lazy val models =
 lazy val `models-avro` = project
   .library("models-avro")
   .dependsOn(models % "test->test;compile->compile")
-  .mainDependencies(avro, catsCore, catsFree, vulcan)
+  .mainDependencies(avro, catsCore, catsFree, catsKernel, ip4sCore, vulcan)
 
 lazy val `models-ciris` = project
   .library("models-ciris")

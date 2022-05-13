@@ -35,9 +35,6 @@ object Generators:
     textGen(1, 12).map(MessageSubject.from(_).toOption.get)
 
   @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
-  private[this] val payloadGen: Gen[Payload] = textGen(1, 24).map(Payload.from(_).toOption.get)
-
-  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   private[this] val portGen: Gen[Port] = Gen.choose(0, 65535).map(port => Port.fromInt(port).get)
 
   /** @see
@@ -78,10 +75,10 @@ object Generators:
   yield SmsMessage(body, from, to)
 
   private[this] val webhookMessageGen: Gen[WebhookMessage] = for
-    payload <- payloadGen
+    body <- messageBodyGen
     host <- hostGen
     port <- portGen
     hookUrl <- urlGen.map(URL(_))
-  yield WebhookMessage(payload, host, port, hookUrl)
+  yield WebhookMessage(body, host, port, hookUrl)
 
   val messageGen: Gen[Message] = Gen.oneOf(emailMessageGen, smsMessageGen, webhookMessageGen)
