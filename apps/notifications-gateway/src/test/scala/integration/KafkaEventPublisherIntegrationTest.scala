@@ -68,10 +68,10 @@ object KafkaEventPublisherIntegrationTest extends EventAvroCodec:
 
         avroSettingsSharedClient.map { avroSettings =>
           implicit def eventDeserializer: RecordDeserializer[IO, Event] =
-            avroDeserializer[Event].using(avroSettings)
+            avroDeserializer[Event].using(avroSettings.withAutoRegisterSchemas(false))
 
           implicit val eventSerializer: RecordSerializer[IO, Event] =
-            avroSerializer[Event].using(avroSettings)
+            avroSerializer[Event].using(avroSettings.withAutoRegisterSchemas(false))
 
           val consumerSettings = ConsumerSettings[IO, String, Event]
             .withAutoOffsetReset(AutoOffsetReset.Earliest)
