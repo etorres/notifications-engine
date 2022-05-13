@@ -61,3 +61,10 @@ object KafkaConfig:
     val default: SchemaRegistry = unsafeFrom("http://localhost:8081")
 
     extension (schemaRegistry: SchemaRegistry) def value: String = schemaRegistry
+
+  val default: KafkaConfig = KafkaConfig(
+    BootstrapServer.default,
+    ConsumerGroup.default,
+    Topic.default,
+    SchemaRegistry.default,
+  )

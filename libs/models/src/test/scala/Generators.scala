@@ -1,10 +1,10 @@
 package es.eriktorr.notification_engine
 
+import Event.{EmailSent, SmsSent, WebhookSent}
 import Message.{EmailMessage, SmsMessage, WebhookMessage}
 import User.{Addressee, Role, Sender}
 
 import com.comcast.ip4s.{Host, Port}
-
 import org.scalacheck.Gen
 
 import java.net.URL
@@ -82,3 +82,12 @@ object Generators:
   yield WebhookMessage(body, host, port, hookUrl)
 
   val messageGen: Gen[Message] = Gen.oneOf(emailMessageGen, smsMessageGen, webhookMessageGen)
+
+  val eventGen: Gen[Event] = for
+    eventId <- eventIdGen
+    message <- messageGen
+    event = message match
+      case emailMessage: EmailMessage => EmailSent(eventId, emailMessage)
+      case smsMessage: SmsMessage => SmsSent(eventId, smsMessage)
+      case webhookMessage: WebhookMessage => WebhookSent(eventId, webhookMessage)
+  yield event
