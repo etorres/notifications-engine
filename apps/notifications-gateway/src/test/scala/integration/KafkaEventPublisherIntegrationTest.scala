@@ -4,9 +4,13 @@ package integration
 import Generators.eventGen
 import config.KafkaConfig
 import infrastructure.KafkaEventPublisher
-import integration.KafkaEventPublisherIntegrationTest.defaultKafkaClients
+import integration.KafkaEventPublisherIntegrationTest.{
+  defaultKafkaClients,
+  ConsumedEventsState,
+  InMemoryConsumedEvents,
+}
 
-import cats.effect.{IO, Resource}
+import cats.effect.{IO, Ref, Resource}
 import cats.implicits.*
 import fs2.kafka.*
 import fs2.kafka.vulcan.{
@@ -39,18 +43,22 @@ final class KafkaEventPublisherIntegrationTest extends CatsEffectSuite with Scal
     forAllF(eventGen) { event =>
       val (consumer, producer) = kafkaClientsFixture()
       for
+        consumedEventsStateRef <- Ref.of[IO, ConsumedEventsState](ConsumedEventsState.empty)
+        consumedEvents = InMemoryConsumedEvents(consumedEventsStateRef)
         logger <- Slf4jLogger.create[IO]
         eventPublisher = KafkaEventPublisher(producer, KafkaConfig.default.topic.value, logger)
         _ <- eventPublisher.publish(event)
-        result <- consumer.stream
-          .mapAsync(2) { committable =>
-            IO(committable.record.value)
+        _ <- consumer.stream
+          .mapAsync(1) { committable =>
+            consumedEvents.add(committable.record.value).as(committable.offset)
           }
+          .through(commitBatchWithin(500, 15.seconds))
           .timeout(30.seconds)
           .take(1)
           .compile
-          .toList
-      yield assertEquals(result, List(event))
+          .drain
+        finalState <- consumedEventsStateRef.get
+      yield assertEquals(finalState.events, List(event))
     }
   }
 
@@ -68,7 +76,13 @@ object KafkaEventPublisherIntegrationTest extends EventAvroCodec:
 
         avroSettingsSharedClient
           .flatMap { avroSettings =>
-            val avroSettingsWithoutAutoRegister = avroSettings.withAutoRegisterSchemas(false)
+            val avroSettingsWithoutAutoRegister =
+              avroSettings
+                .withAutoRegisterSchemas(false)
+                .withProperties(
+                  "auto.register.schemas" -> "false",
+                  "use.latest.version" -> "true",
+                )
 
             avroSettingsWithoutAutoRegister.registerSchema[String](
               s"${kafkaConfig.topic}-key",
@@ -109,3 +123,12 @@ object KafkaEventPublisherIntegrationTest extends EventAvroCodec:
       consumer: Resource[IO, KafkaConsumer[IO, String, Event]],
       producer: Resource[IO, KafkaProducer[IO, String, Event]],
   )
+
+  final private case class ConsumedEventsState(events: List[Event])
+
+  private object ConsumedEventsState:
+    def empty: ConsumedEventsState = ConsumedEventsState(List.empty)
+
+  final private class InMemoryConsumedEvents(stateRef: Ref[IO, ConsumedEventsState]):
+    def add(event: Event): IO[Unit] =
+      stateRef.update(currentState => currentState.copy(event :: currentState.events))

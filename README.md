@@ -30,3 +30,6 @@ jenv exec sbt "project notifications-gateway" Universal/packageBin
 ```commandline
 jenv exec sbt "project notifications-dispatcher" Universal/packageBin
 ```
+
+## See also
+* [Putting Several Event Types in the Same Topic – Revisited](https://www.confluent.io/blog/multiple-event-types-in-the-same-kafka-topic/).
