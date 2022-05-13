@@ -66,29 +66,40 @@ object KafkaEventPublisherIntegrationTest extends EventAvroCodec:
           kafkaConfig.schemaRegistry.value,
         ).createSchemaRegistryClient.map(AvroSettings(_))
 
-        avroSettingsSharedClient.map { avroSettings =>
-          implicit def eventDeserializer: RecordDeserializer[IO, Event] =
-            avroDeserializer[Event].using(avroSettings.withAutoRegisterSchemas(false))
+        avroSettingsSharedClient
+          .flatMap { avroSettings =>
+            val avroSettingsWithoutAutoRegister = avroSettings.withAutoRegisterSchemas(false)
 
-          implicit val eventSerializer: RecordSerializer[IO, Event] =
-            avroSerializer[Event].using(avroSettings.withAutoRegisterSchemas(false))
+            avroSettingsWithoutAutoRegister.registerSchema[String](
+              s"${kafkaConfig.topic}-key",
+            ) *>
+              avroSettingsWithoutAutoRegister.registerSchema[Event](
+                s"${kafkaConfig.topic}-value",
+              ) *> IO(avroSettingsWithoutAutoRegister)
+          }
+          .map { avroSettingsWithoutAutoRegister =>
+            implicit def eventDeserializer: RecordDeserializer[IO, Event] =
+              avroDeserializer[Event].using(avroSettingsWithoutAutoRegister)
 
-          val consumerSettings = ConsumerSettings[IO, String, Event]
-            .withAutoOffsetReset(AutoOffsetReset.Earliest)
-            .withBootstrapServers(kafkaConfig.bootstrapServersAsString)
-            .withGroupId(kafkaConfig.consumerGroup.value)
+            implicit val eventSerializer: RecordSerializer[IO, Event] =
+              avroSerializer[Event].using(avroSettingsWithoutAutoRegister)
 
-          val producerSettings = ProducerSettings[IO, String, Event]
-            .withBootstrapServers(kafkaConfig.bootstrapServersAsString)
+            val consumerSettings = ConsumerSettings[IO, String, Event]
+              .withAutoOffsetReset(AutoOffsetReset.Earliest)
+              .withBootstrapServers(kafkaConfig.bootstrapServersAsString)
+              .withGroupId(kafkaConfig.consumerGroup.value)
 
-          val consumer = KafkaConsumer
-            .resource(consumerSettings)
-            .evalTap(_.subscribeTo(kafkaConfig.topic.value))
+            val producerSettings = ProducerSettings[IO, String, Event]
+              .withBootstrapServers(kafkaConfig.bootstrapServersAsString)
 
-          val producer = KafkaProducer.resource(producerSettings)
+            val consumer = KafkaConsumer
+              .resource(consumerSettings)
+              .evalTap(_.subscribeTo(kafkaConfig.topic.value))
 
-          KafkaClients(consumer, producer)
-        }
+            val producer = KafkaProducer.resource(producerSettings)
+
+            KafkaClients(consumer, producer)
+          }
       }
       .flatMap { clients =>
         (clients.consumer, clients.producer).tupled
