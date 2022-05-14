@@ -29,7 +29,7 @@ final class KafkaEventPublisherIntegrationTest extends KafkaClientsSuite:
           .mapAsync(1) { committable =>
             consumedEvents.add(committable.record.value).as(committable.offset)
           }
-          .through(commitBatchWithin(500, 15.seconds))
+          .through(commitBatchWithin(100, 15.seconds))
           .timeout(30.seconds)
           .take(1)
           .compile

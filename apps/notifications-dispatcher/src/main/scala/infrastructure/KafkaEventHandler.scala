@@ -24,4 +24,4 @@ final class KafkaEventHandler(
         case webhookSent: WebhookSent => webhookSent.webhookMessage
       messageDispatcher.dispatch(message).as(committable.offset)
     }
-    .through(commitBatchWithin(500, 15.seconds))
+    .through(commitBatchWithin(100, 15.seconds))

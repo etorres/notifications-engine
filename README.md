@@ -12,31 +12,72 @@ This is an adaptation of the blog entry [Building High-Performance Notification 
 
 ## Examples
 
-```commandline
-curl --url http://localhost:8080/api/v1/email
-     --header 'content-type: application/json'
+```shell
+curl --url http://localhost:8080/api/v1/email \
+     --header 'content-type: application/json' \
      --data '{"body":"Hello","subject":"Greetings from Mary","from":{"user":"Mary"},"to":{"user":"Rose"}}' 
 ```
-```commandline
-curl --url http://localhost:8080/api/v1/sms
-     --header 'content-type: application/json'
+```shell
+curl --url http://localhost:8080/api/v1/sms \
+     --header 'content-type: application/json' \
      --data '{"body":"Hi!","from":{"user":"John"},"to":{"user":"Jane"}}' 
 ```
 
-```commandline
-curl --url http://localhost:8080/api/v1/webhook 
-     --header 'content-type: application/json' 
+```shell
+curl --url http://localhost:8080/api/v1/webhook \
+     --header 'content-type: application/json' \
      --data '{"body":"Have a nice day!","host":"www.example.org","port":"8080","hookUrl":"http://example.org/hook"}'
 ```
 
 ## Build binary packages
 
-```commandline
-jenv exec sbt "project notifications-gateway" Universal/packageBin
+```shell
+sbt "project notifications-gateway" Universal/packageBin
 ```
 
-```commandline
-jenv exec sbt "project notifications-dispatcher" Universal/packageBin
+```shell
+sbt "project notifications-dispatcher" Universal/packageBin
+```
+## Schema
+
+```shell
+curl -s http://localhost:8081/subjects | jq
+```
+```json
+[
+  "notifications-engine-tests-key",
+  "notifications-engine-tests-value"
+]
+```
+
+```shell
+curl -s http://localhost:8081/subjects/notifications-engine-tests-key/versions/latest | jq
+```
+```json
+{
+  "subject": "notifications-engine-tests-key",
+  "version": 1,
+  "id": 1,
+  "schema": "\"string\""
+}
+```
+
+```shell
+curl -s http://localhost:8081/subjects/notifications-engine-tests-value/versions/latest | jq
+```
+```json
+{
+  "subject": "notifications-engine-tests-value",
+  "version": 1,
+  "id": 2,
+  "schema": "[{\"type\":\"record\",\"name\":\"EmailSent\",\"namespace\":\"es.eriktorr.notifications_engine\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"emailMessage\",\"type\":{\"type\":\"record\",\"name\":\"EmailMessage\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"},{\"name\":\"subject\",\"type\":\"string\"},{\"name\":\"from\",\"type\":\"string\"},{\"name\":\"to\",\"type\":\"string\"}]}}]},{\"type\":\"record\",\"name\":\"SmsSent\",\"namespace\":\"es.eriktorr.notifications_engine\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"smsMessage\",\"type\":{\"type\":\"record\",\"name\":\"SmsMessage\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"},{\"name\":\"from\",\"type\":\"string\"},{\"name\":\"to\",\"type\":\"string\"}]}}]},{\"type\":\"record\",\"name\":\"WebhookSent\",\"namespace\":\"es.eriktorr.notifications_engine\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"webhookMessage\",\"type\":{\"type\":\"record\",\"name\":\"WebhookMessage\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"},{\"name\":\"host\",\"type\":\"string\"},{\"name\":\"port\",\"type\":\"int\"},{\"name\":\"hookUrl\",\"type\":\"string\"}]}}]}]"
+```
+
+```shell
+curl -s http://localhost:8081/subjects/notifications-engine-tests-value/versions
+```
+```json
+[1]
 ```
 
 ## See also
