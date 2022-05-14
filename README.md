@@ -7,6 +7,7 @@ This is an adaptation of the blog entry [Building High-Performance Notification 
 * [Cats Effect](https://typelevel.org/cats-effect/): Is an asynchronous runtime for Scala.
 * [FS2 Kafka](https://fd4s.github.io/fs2-kafka/): Provides Apache Kafka Streams for Scala.
 * [Vulcan](https://fd4s.github.io/vulcan/): Provides Apache Avro data serialization for Scala.
+* [http4s](https://http4s.org/): HTTP servers and clients for Scala.
 * [MUnit](https://scalameta.org/munit/): Is a Scala testing library.
 
 ## Examples
