@@ -30,6 +30,8 @@ object NotificationsGatewayConfig extends KafkaConfigConfigDecoder:
     val defaultHost = host"0.0.0.0"
     val defaultPort = port"8080"
 
+    val default: HttpServerConfig = HttpServerConfig(defaultHost, defaultPort)
+
   implicit def hostDecoder: ConfigDecoder[String, Host] =
     ConfigDecoder.lift(host =>
       Host.fromString(host) match
