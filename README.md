@@ -9,16 +9,20 @@ This is an adaptation of the blog entry [Building High-Performance Notification 
 ## Examples
 
 ```commandline
-curl --request POST 
-     --url http://localhost:8080/api/v1/email
+curl --url http://localhost:8080/api/v1/email
      --header 'content-type: application/json'
      --data '{"body":"Hello","subject":"Greetings from Mary","from":{"user":"Mary"},"to":{"user":"Rose"}}' 
 ```
 ```commandline
-curl --request POST 
-     --url http://localhost:8080/api/v1/sms
+curl --url http://localhost:8080/api/v1/sms
      --header 'content-type: application/json'
      --data '{"body":"Hi!","from":{"user":"John"},"to":{"user":"Jane"}}' 
+```
+
+```commandline
+curl --url http://localhost:8080/api/v1/webhook 
+     --header 'content-type: application/json' 
+     --data '{"body":"Have a nice day!","host":"www.example.org","port":"8080","hookUrl":"http://example.org/hook"}'
 ```
 
 ## Build binary packages
