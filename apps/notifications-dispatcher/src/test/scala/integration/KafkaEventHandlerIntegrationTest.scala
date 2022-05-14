@@ -1,28 +1,47 @@
 package es.eriktorr.notifications_engine
 package integration
 
-import Generators.{eventIdGen, messageGen}
-import integration.KafkaEventHandlerIntegrationTest.testCaseGen
+import Event.{EmailSent, SmsSent, WebhookSent}
+import Generators.eventGen
+import config.KafkaConfig
+import infrastructure.{
+  DispatchedMessagesState,
+  FakeMessageDispatcher,
+  KafkaClientsSuite,
+  KafkaEventHandler,
+}
+import integration.KafkaEventHandlerIntegrationTest.messageFrom
 
-import cats.effect.IO
-import munit.{CatsEffectSuite, ScalaCheckEffectSuite}
+import cats.effect.{IO, Ref}
+import fs2.kafka.{ProducerRecord, ProducerRecords}
 import org.scalacheck.effect.PropF.{effectOfPropFToPropF, forAllF}
-import org.scalacheck.{Gen, Test}
 
-final class KafkaEventHandlerIntegrationTest extends CatsEffectSuite with ScalaCheckEffectSuite:
-  override def scalaCheckTestParameters: Test.Parameters =
-    super.scalaCheckTestParameters.withMinSuccessfulTests(1).withWorkers(1)
+import scala.concurrent.duration.*
 
-  test("it should handle events".ignore) {
-    forAllF(testCaseGen) { testCase =>
-      IO.unit.map(_ => fail("not implemented"))
+final class KafkaEventHandlerIntegrationTest extends KafkaClientsSuite:
+
+  test("it should handle events") {
+    forAllF(eventGen) { event =>
+      val (consumer, producer) = kafkaClientsFixture()
+      for
+        dispatchedMessagesStateRef <- Ref.of[IO, DispatchedMessagesState](
+          DispatchedMessagesState.empty,
+        )
+        messageDispatcher = FakeMessageDispatcher(dispatchedMessagesStateRef)
+        _ <- producer.produce(
+          ProducerRecords.one(
+            ProducerRecord(KafkaConfig.default.topic.value, event.id.value, event),
+          ),
+        )
+        eventHandler = KafkaEventHandler(consumer, messageDispatcher)
+        _ <- eventHandler.handle.timeout(30.seconds).take(1).compile.drain
+        finalState <- dispatchedMessagesStateRef.get
+      yield assertEquals(finalState.messages, List(messageFrom(event)))
     }
   }
 
 object KafkaEventHandlerIntegrationTest:
-  final private case class TestCase(message: Message, eventId: EventId)
-
-  private val testCaseGen: Gen[TestCase] = for
-    message <- messageGen
-    eventId <- eventIdGen
-  yield TestCase(message, eventId)
+  def messageFrom(event: Event): Message = event match
+    case EmailSent(_, emailMessage) => emailMessage
+    case SmsSent(_, smsMessage) => smsMessage
+    case WebhookSent(_, webhookMessage) => webhookMessage
