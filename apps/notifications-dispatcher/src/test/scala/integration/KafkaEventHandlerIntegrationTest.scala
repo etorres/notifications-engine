@@ -1,7 +1,8 @@
 package es.eriktorr.notifications_engine
+package integration
 
 import Generators.{eventIdGen, messageGen}
-import KafkaEventHandlerIntegrationTest.testCaseGen
+import integration.KafkaEventHandlerIntegrationTest.testCaseGen
 
 import cats.effect.IO
 import munit.{CatsEffectSuite, ScalaCheckEffectSuite}
