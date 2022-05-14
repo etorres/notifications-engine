@@ -30,6 +30,7 @@ lazy val `notifications-dispatcher` =
       catsCore,
       catsEffect,
       catsEffectKernel,
+      catsEffectStd,
       ciris,
       fs2Core,
       fs2kafka,
