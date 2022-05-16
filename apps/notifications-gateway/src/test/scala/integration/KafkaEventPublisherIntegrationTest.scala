@@ -26,7 +26,7 @@ final class KafkaEventPublisherIntegrationTest extends KafkaClientsSuite:
         eventPublisher = KafkaEventPublisher(producer, KafkaConfig.default.topic.value, logger)
         _ <- eventPublisher.publish(event)
         _ <- consumer.stream
-          .mapAsync(1) { committable =>
+          .evalMap { committable =>
             consumedEvents.add(committable.record.value).as(committable.offset)
           }
           .through(commitBatchWithin(100, 15.seconds))

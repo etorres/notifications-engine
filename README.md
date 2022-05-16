@@ -82,5 +82,7 @@ curl -s http://localhost:8081/subjects/notifications-engine-tests-value/versions
 
 ## See also
 * [Putting Several Event Types in the Same Topic – Revisited](https://www.confluent.io/blog/multiple-event-types-in-the-same-kafka-topic/).
+* [Kafka transactions](https://fd4s.github.io/fs2-kafka/docs/transactions).
 * [Gracefully shutdown a Kafka consumer](https://fd4s.github.io/fs2-kafka/docs/consumers#graceful-shutdown).
 * [MonadCancel](https://typelevel.org/cats-effect/docs/typeclasses/monadcancel).
+* [FS2: Interruption](https://fs2.io/#/guide?id=interruption).

@@ -2,10 +2,9 @@ package es.eriktorr.notifications_engine
 
 import infrastructure.{KafkaClients, KafkaEventHandler, LoggingMessageDispatcher}
 
-import cats.effect.*
-import cats.effect.IO.{IOCont, Uncancelable}
-import cats.effect.kernel.Outcome
+import cats.effect.kernel.{Deferred, Outcome, Ref}
 import cats.effect.std.Console
+import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits.*
 import fs2.kafka.KafkaConsumer
 import org.typelevel.log4cats.Logger
