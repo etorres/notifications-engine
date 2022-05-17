@@ -12,10 +12,10 @@ trait EmailMessageJsonCodec
     with UserJsonCodec:
   implicit val emailMessageJsonDecoder: Decoder[EmailMessage] = (cursor: HCursor) =>
     for
-      body <- cursor.downField("body").as[MessageBody]
       subject <- cursor.downField("body").as[MessageSubject]
+      body <- cursor.downField("body").as[MessageBody]
       from <- cursor.downField("from").as[User[Sender]]
       to <- cursor.downField("to").as[User[Addressee]]
-    yield EmailMessage(body, subject, from, to)
+    yield EmailMessage(subject, body, from, to)
 
   implicit val emailMessageJsonEncoder: Encoder[EmailMessage] = deriveEncoder[EmailMessage]

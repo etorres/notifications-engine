@@ -62,11 +62,11 @@ object Generators:
   private[this] def userGen[A <: Role]: Gen[User[A]] = textGen().map(User.from[A](_).toOption.get)
 
   private[this] val emailMessageGen: Gen[EmailMessage] = for
-    body <- messageBodyGen
     subject <- messageSubjectGen
+    body <- messageBodyGen
     from <- userGen[Sender]
     to <- userGen[Addressee]
-  yield EmailMessage(body, subject, from, to)
+  yield EmailMessage(subject, body, from, to)
 
   private[this] val smsMessageGen: Gen[SmsMessage] = for
     body <- messageBodyGen

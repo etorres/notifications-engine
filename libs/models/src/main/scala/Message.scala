@@ -11,8 +11,8 @@ sealed trait Message:
 
 object Message:
   final case class EmailMessage(
-      body: MessageBody,
       subject: MessageSubject,
+      body: MessageBody,
       from: User[Sender],
       to: User[Addressee],
   ) extends Message

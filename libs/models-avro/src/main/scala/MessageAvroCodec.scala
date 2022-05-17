@@ -18,8 +18,8 @@ trait MessageAvroCodec
       namespace = AvroNamespaces.default,
     ) { field =>
       (
-        field("body", _.body),
         field("subject", _.subject),
+        field("body", _.body),
         field("from", _.from),
         field("to", _.to),
       ).mapN(EmailMessage(_, _, _, _))
