@@ -119,7 +119,7 @@ lazy val `models-avro` = project
   .library("models-avro")
   .dependsOn(models % "test->test;compile->compile")
   .mainDependencies(avro, catsCore, catsFree, catsKernel, ip4sCore, vulcan)
-  .testDependencies(munit, munitScalacheck)
+  .testDependencies(log4jApi, log4jCore, log4jSlf4jImpl, munit, munitScalacheck)
 
 lazy val `models-ciris` = project
   .library("models-ciris")
