@@ -5,7 +5,7 @@ import Generators.{eventGen, messageGen}
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 
-final class MessageAvroCodecUnitTest extends ScalaCheckSuite with EventAvroCodec:
+final class EventAvroCodecUnitTest extends ScalaCheckSuite with EventAvroCodec:
 
   property("message encoding is reversible") {
     forAll(messageGen) { message =>
